@@ -2,15 +2,17 @@
 
 #[macro_use]
 extern crate rocket;
-#[macro_use]
 extern crate rocket_contrib;
-#[macro_use(bson, doc)] extern crate bson;
+#[macro_use(doc)] extern crate bson;
 use rocket_contrib::{serve::StaticFiles, templates::Template};
+
+extern crate serde;
+
+extern crate mongodb;
 
 extern crate dotenv;
 
 mod models;
-use models::db::MyDatabase;
 
 mod routes;
 use routes::index;
@@ -23,7 +25,6 @@ fn main() {
 
   rocket::ignite()
     .attach(Template::fairing())
-    .attach(MyDatabase::fairing())
     .mount("/", routes![index::index, index::catch_all])
     .mount("/static", StaticFiles::from("./client/build/").rank(-6))
     .launch();
