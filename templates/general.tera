@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>
+    {% if title %}
+      {{ title | title }} | DerivedBlog
+    {% else %}
+      DerivedBlog
+    {% endif %}
+  </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+  </style>
+  <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+  <input type="hidden" name="server-data" value="
+    {% if data %}
+      {{data}}
+    {%endif%}
+  ">
+  <div id="root"></div>
+  <script src="/static/Index.js"></script>
+</body>
+</html>
