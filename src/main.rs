@@ -7,10 +7,9 @@ extern crate rocket_contrib;
 use rocket_contrib::{serve::StaticFiles, templates::Template};
 
 extern crate serde;
-
 extern crate mongodb;
-
 extern crate dotenv;
+extern crate bcrypt;
 
 mod models;
 

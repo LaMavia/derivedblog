@@ -1,7 +1,5 @@
-use bson::ordered;
-use mongodb::{bson, db::DatabaseInner, Bson};
-use mongodb::{db::ThreadedDatabase, Client, ThreadedClient};
-use serde::Serialize;
+use mongodb::{bson};
+use mongodb::{db::ThreadedDatabase, ThreadedClient};
 
 #[derive(Debug)]
 pub struct Model {
@@ -44,62 +42,6 @@ impl From<mongodb::Document> for Model {
 
 #[allow(dead_code)]
 impl Model {
-  pub fn new<'a>(
-    id: &'a str,
-    title: &'a str,
-    subtitle: &'a str,
-    abstract_: &'a str,
-    tags: &'a Vec<String>,
-    author_id: &'a str,
-    body: &'a str,
-    theme: &'a str,
-    image_url: &'a str,
-    date: &'a str,
-    front_page_style: &'a str,
-  ) -> Model {
-    Model {
-      _id: id.to_owned(),
-      title: title.to_owned(),
-      subtitle: subtitle.to_owned(),
-      abstract_: abstract_.to_owned(),
-      tags: tags.to_owned(),
-      author_id: author_id.to_owned(),
-      body: body.to_owned(),
-      theme: theme.to_owned(),
-      image_url: image_url.to_owned(),
-      date: date.to_owned(),
-      front_page_style: front_page_style.to_owned(),
-    }
-  }
-
-  pub fn to_bson(&self) -> bson::ordered::OrderedDocument {
-    let mut tags = String::new();
-    for t in self.tags.iter() {
-      tags.push_str(&t);
-    }
-    doc! {
-      "_id": self._id.to_owned(),
-      "title": self.title.to_owned(),
-      "subtitle": self.subtitle.to_owned(),
-      "abstract_": self.abstract_.to_owned(),
-      "tags": tags,
-      "author_id": self.author_id.to_owned(),
-      "body": self.body.to_owned(),
-      "theme": self.theme.to_owned(),
-      "image_url": self.image_url.to_owned(),
-      "date": self.date.to_owned(),
-      "front_page_style": self.front_page_style.to_owned(),
-    }
-  }
-
-  pub fn create(&self, conn: &mongodb::Client) -> mongodb::coll::results::InsertOneResult {
-    let col = conn.db("derivedblog").collection("posts");
-    col
-      .insert_one(self.to_bson().clone(), None)
-      .ok()
-      .expect("Failed to insert a new post")
-  }
-
   pub fn all(conn: &mongodb::Client) -> Vec<Model> {
     let mut res: Vec<Model> = vec![];
 
@@ -159,8 +101,10 @@ impl Injectable {
       front_page_style: front_page_style.to_owned(),
     }
   }
+}
 
-  pub fn to_bson(&self) -> bson::ordered::OrderedDocument {
+impl super::helpers::Inject for Injectable {
+  fn to_bson(&self) -> bson::ordered::OrderedDocument {
     let mut tags = String::new();
     for t in self.tags.iter() {
       tags.push_str(&t);
@@ -179,7 +123,7 @@ impl Injectable {
     }
   }
 
-  pub fn create(&self, conn: &mongodb::Client) -> mongodb::coll::results::InsertOneResult {
+  fn create(&self, conn: &mongodb::Client) -> mongodb::coll::results::InsertOneResult {
     let col = conn.db("derivedblog").collection("posts");
     col
       .insert_one(self.to_bson().clone(), None)

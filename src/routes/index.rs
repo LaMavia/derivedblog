@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use rocket::response::{Redirect};
 use rocket_contrib::{templates::Template};
-use crate::models::{post, db};
+use crate::models::{user, db, helpers::Inject};
 // type RawStr = &'static str;
 #[get("/<_foo..>", rank = 10)]
 pub fn catch_all(_foo: PathBuf) -> Template {
@@ -14,7 +14,21 @@ pub fn catch_all(_foo: PathBuf) -> Template {
 
 #[get("/")]
 pub fn index() -> Redirect {
-  let p = post::Injectable::new(
+  let p = user::Injectable::new(
+    "root".to_owned(),
+    "toor".to_owned(),
+    "mail@me.com".to_owned(),
+    "GausianHeisenberg".to_owned()
+  );
+
+  let conn = db::connect();
+
+  p.create(&conn);
+
+  Redirect::to("/home")
+}
+/*
+post::Injectable::new(
     "Cats will rule the world!",
     "Get to know how",
     "Catty abstract followed by a little bit of lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque ac tincidunt ante. Sed fringilla nulla dolor, nec luctus neque volutpat et. Phasellus pellentesque lacus in massa blandit convallis. Nam interdum pharetra dolor, eget faucibus nibh congue pulvinar.",
@@ -29,10 +43,4 @@ pub fn index() -> Redirect {
     "02-07-2019",
     "left"
   );
-
-  let conn = db::connect();
-
-  p.create(&conn);
-
-  Redirect::to("/home")
-}
+ */
